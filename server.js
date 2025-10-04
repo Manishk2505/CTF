@@ -25,7 +25,7 @@ const profiles = {
   1000: { dept: 'Executive', role: 'Chief Executive Officer', manager: 'Board of Directors', period: 'FY2025 H1', rating: 'N/A' }
 };
 
-// Shared HTML shell with Bootstrap 5, gradient event text, and no-scroll layout
+// Shared HTML shell with Bootstrap 5 and restored brand formatting
 function page(title, bodyHtml, showLogout = true) {
   return `
 <!doctype html>
@@ -51,15 +51,16 @@ function page(title, bodyHtml, showLogout = true) {
     .main { flex:1; display:flex; flex-direction:column; }
 
     .navbar { background: var(--panel); }
-    .brand { color: var(--ink); }
+    /* RESTORED brand formatting */
+    .brand { color: var(--ink); letter-spacing: .2px; }
+    .brand .accent { color: var(--brand-blue); } /* earlier accent color */
+    .brand .accent-orange { color: var(--brand-orange); } /* optional alt accent */
 
-    /* Event header with half orange / half blue gradient text */
+    /* Event header with split gradient */
     .grad-split {
       background: linear-gradient(90deg, var(--brand-orange) 0 50%, var(--brand-blue) 50% 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      color: transparent;
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent; color: transparent;
     }
 
     .hero { text-align:center; padding: 28px 16px 8px; }
@@ -73,7 +74,6 @@ function page(title, bodyHtml, showLogout = true) {
     }
     .hero .dot{width:10px;height:10px;border-radius:50%;background:var(--brand-orange);box-shadow:0 0 0 3px rgba(243,111,33,.25);}
 
-    /* Login card: compact to avoid scrolling, still readable */
     .login-wrap { padding-bottom: 12px; }
     .login-card{ background:#111827; border:0; box-shadow:0 12px 36px rgba(0,0,0,.30); }
     .login-card h4{ color:var(--ink-strong)!important; }
@@ -86,7 +86,6 @@ function page(title, bodyHtml, showLogout = true) {
     }
     .btn-primary:hover{ filter:brightness(1.03); }
 
-    /* Sidebar and content cards (documents) */
     .sidebar{ min-height: 100vh; background: var(--panel); }
     .sidebar a{ color:#a3b2c6; text-decoration:none; display:block; padding:.7rem 1rem; border-radius:.5rem; }
     .sidebar a.active, .sidebar a:hover{ background:#111827; color:var(--ink-strong); }
@@ -100,14 +99,16 @@ function page(title, bodyHtml, showLogout = true) {
   </style>
 </head>
 <body>
-  <nav class="navbar navbar-expand">
-    <div class="container py-2">
-      <span class="navbar-brand brand m-0 fw-semibold">Company Portal</span>
-      <div class="ms-auto">
-        ${showLogout ? '<a class="btn btn-outline-light btn-sm" href="/logout">Logout</a>' : ''}
-      </div>
+ <nav class="navbar navbar-expand">
+  <div class="container-fluid py-2 px-3">
+    <span class="navbar-brand brand m-0 fw-semibold">
+      <span class="accent">Company</span> Portal
+    </span>
+    <div class="ms-auto">
+      ${showLogout ? '<a class="btn btn-outline-light btn-sm" href="/logout">Logout</a>' : ''}
     </div>
-  </nav>
+  </div>
+</nav>
 
   <main class="main">
     ${bodyHtml}
@@ -119,10 +120,8 @@ function page(title, bodyHtml, showLogout = true) {
 </html>`;
 }
 
-// Build an official-looking report for a given id
 function reportFor(id) {
-  const u = users[id];
-  const p = profiles[id];
+  const u = users[id], p = profiles[id];
   if (!u || !p) return null;
 
   const base = `
@@ -162,7 +161,6 @@ function reportFor(id) {
       <li>Mentor a junior engineer through a full feature lifecycle.</li>
     </ul>
   `;
-
   if (id === 1000) {
     return `
       ${base}
@@ -171,20 +169,17 @@ function reportFor(id) {
       <p class="mb-2">Revenue growth is tracking above guidance with disciplined cost control and strong free cash flow.</p>
       <p class="mb-2">Priority areas: platform reliability, security posture, and product differentiation in core verticals.</p>
       <p class="mb-2">Risk posture remains manageable with contingency plans for macro and supply chain variability.</p>
-
       <h6 class="text-uppercase text-secondary mt-4">Strategy Highlights</h6>
       <ul class="mb-2">
         <li>Accelerate AI‑assisted workflows across product lines and developer experience.</li>
         <li>Strengthen partner ecosystem integrations to drive adoption.</li>
         <li>Invest in talent density and leadership succession across critical functions.</li>
       </ul>
-
       <div class="alert alert-primary mt-4" role="alert">
         Confidential Addendum — Flag: <strong>${FLAG}</strong>
       </div>
     `;
   }
-
   return base;
 }
 
