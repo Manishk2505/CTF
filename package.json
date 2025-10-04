@@ -1,0 +1,14 @@
+{
+  "name": "ctf-idor",
+  "version": "1.0.0",
+  "description": "IDOR training challenge",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "cookie-parser": "^1.4.6",
+    "express": "^4.19.2"
+  }
+}
