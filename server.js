@@ -36,19 +36,34 @@ function page(title, bodyHtml, showLogout = true) {
   <title>${title}</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
   <style>
-    :root { --bg:#0f172a; --panel:#0b1220; --ink:#e2e8f0; --muted:#94a3b8; --accent:#60a5fa; }
+    :root { --bg:#0f172a; --panel:#0b1220; --ink:#e5e7eb; --ink-strong:#f3f4f6; --muted:#cbd5e1; --accent:#60a5fa; }
     body { background: var(--bg); color: var(--ink); }
     .navbar { background: var(--panel); }
     .brand { color: var(--ink); }
     .brand .accent { color: var(--accent); }
     .sidebar { min-height: 100vh; background: var(--panel); }
-    .sidebar a { color: var(--muted); text-decoration: none; display: block; padding: .75rem 1rem; border-radius: .5rem; }
-    .sidebar a.active, .sidebar a:hover { background: #111827; color: var(--ink); }
+    .sidebar a { color: #a3b2c6; text-decoration: none; display: block; padding: .75rem 1rem; border-radius: .5rem; }
+    .sidebar a.active, .sidebar a:hover { background: #111827; color: var(--ink-strong); }
     .card { background: #111827; border: 0; box-shadow: 0 8px 28px rgba(0,0,0,.24); }
-    .credit { background: var(--panel); color: #9aa9c0; }
-    .meta { color: #9aa9c0; }
+    /* High-contrast content inside cards */
+    .card h5, .card h6, .card p, .card li, .card div, .card span { color: var(--ink-strong); }
+    .card .meta, .meta { color: var(--muted) !important; }
+    /* Override Bootstrap's low-contrast secondary on dark UI */
+    .text-secondary { color: var(--muted) !important; }
     .badge-soft { background: rgba(96,165,250,.15); color: var(--accent); border: 1px solid rgba(96,165,250,.35); }
+    .credit { background: var(--panel); color: #9aa9c0; }
+    /* Login page header tags */
+    .event-tag { color: var(--muted); }
   </style>
+  /* High-contrast fixes for login page */
+.card h4 { color: var(--ink-strong) !important; }
+.card .form-label { color: var(--ink-strong) !important; }
+.event-tag { color: var(--muted) !important; }          /* subtitle under event title */
+.text-secondary { color: var(--muted) !important; }     /* override low-contrast default */
+
+/* Inputs: clear, readable text on white fields */
+.card .form-control { color: #0f172a; background-color: #ffffff; }
+.card .form-control::placeholder { color: #64748b; }    /* darker placeholder for contrast */
 </head>
 <body>
   <nav class="navbar navbar-expand px-3">
@@ -61,7 +76,7 @@ function page(title, bodyHtml, showLogout = true) {
   </nav>
   ${bodyHtml}
   <footer class="credit text-center py-2 mt-4">
-    Challenge by Manish — Product Security Engineer
+    © Manish Kale — Product Security Engineer
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 </body>
@@ -74,10 +89,9 @@ function reportFor(id) {
   const p = profiles[id];
   if (!u || !p) return null;
 
-  // Base content for employees
   const base = `
     <div class="d-flex align-items-center justify-content-between">
-      <h5 class="mb-0">Performance Review — ${p.period}</h5>
+      <h5 class="mb-0">${id === 1000 ? 'Executive Performance Report' : 'Performance Review'} — ${p.period}</h5>
       <span class="badge badge-soft">${p.rating}</span>
     </div>
     <hr class="border-secondary" />
@@ -101,32 +115,31 @@ function reportFor(id) {
     <ul class="mb-2">
       <li>Throughput and on‑time delivery improved relative to the previous period.</li>
       <li>Defect density within acceptable thresholds; regression escape rate trending down.</li>
-      <li>Service reliability metrics (latency/error budget) within SLO targets for owned services.</li>
+      <li>Service reliability metrics remain within SLO targets for owned services.</li>
       <li>Security hygiene: dependencies patched and secrets scanning violations remediated.</li>
     </ul>
 
     <h6 class="text-uppercase text-secondary mt-4">Goals and Development</h6>
     <ul class="mb-0">
-      <li>Deepen system design skills and lead one cross‑team initiative next period.</li>
-      <li>Expand automated testing for critical paths and reduce flaky tests by 30%.</li>
+      <li>Lead one cross‑team initiative with clear success metrics.</li>
+      <li>Expand automated tests for critical paths and reduce flaky tests by 30%.</li>
       <li>Mentor a junior engineer through a full feature lifecycle.</li>
     </ul>
   `;
 
-  // CEO content is richer and includes the flag
   if (id === 1000) {
     return `
-      ${base.replace('Performance Review', 'Executive Performance Report')}
+      ${base}
       <hr class="border-secondary" />
       <h6 class="text-uppercase text-secondary">Company Outlook</h6>
-      <p class="mb-2">Revenue growth is tracking above guidance with disciplined cost control and healthy free cash flow.</p>
-      <p class="mb-2">Focus areas: platform reliability, security posture, and product differentiation in core verticals.</p>
+      <p class="mb-2">Revenue growth is tracking above guidance with disciplined cost control and strong free cash flow.</p>
+      <p class="mb-2">Priority areas: platform reliability, security posture, and product differentiation in core verticals.</p>
       <p class="mb-2">Risk posture remains manageable with contingency plans for macro and supply chain variability.</p>
 
       <h6 class="text-uppercase text-secondary mt-4">Strategy Highlights</h6>
       <ul class="mb-2">
         <li>Accelerate AI‑assisted workflows across product lines and developer experience.</li>
-        <li>Strengthen partnerships and ecosystem integrations to drive adoption.</li>
+        <li>Strengthen partner ecosystem integrations to drive adoption.</li>
         <li>Invest in talent density and leadership succession across critical functions.</li>
       </ul>
 
@@ -143,6 +156,10 @@ function reportFor(id) {
 app.get('/', (req, res) => {
   const body = `
   <div class="container py-5">
+    <div class="text-center mb-4">
+      <div class="h5 mb-1">October Cyber Month — 2025</div>
+      <div class="event-tag">Hosted by EvDevSec Team</div>
+    </div>
     <div class="row justify-content-center">
       <div class="col-md-6 col-lg-5">
         <div class="card p-4">
@@ -154,14 +171,36 @@ app.get('/', (req, res) => {
             </div>
             <div class="mb-3">
               <label class="form-label">Password</label>
-              <input type="password" name="password" class="form-control" placeholder="Password" required>
+              <div class="input-group">
+                <input type="password" name="password" id="password" class="form-control" placeholder="Password" required>
+                <button class="btn btn-outline-secondary" type="button" id="togglePass" aria-label="Show password">
+                  <!-- Simple eye icon -->
+                  <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8"/>
+                    <path d="M8 5.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5"/>
+                  </svg>
+                </button>
+              </div>
             </div>
             <button type="submit" class="btn btn-primary w-100">Login</button>
           </form>
         </div>
       </div>
     </div>
-  </div>`;
+  </div>
+  <script>
+    (function(){
+      const pwd = document.getElementById('password');
+      const btn = document.getElementById('togglePass');
+      const icon = document.getElementById('eyeIcon');
+      btn.addEventListener('click', () => {
+        const showing = pwd.type === 'text';
+        pwd.type = showing ? 'password' : 'text';
+        // swap icon (simple stroke flip effect)
+        icon.style.opacity = showing ? '1' : '0.7';
+      });
+    })();
+  </script>`;
   res.send(page('Login • Company Portal', body, false));
 });
 
@@ -193,7 +232,7 @@ app.get('/logout', (req, res) => {
   res.redirect('/');
 });
 
-// VULNERABLE endpoint: only checks that someone is logged in; does NOT enforce ownership of id
+// VULNERABLE: checks only "logged in", not ownership of requested id
 app.get('/documents', (req, res) => {
   const uid = req.cookies.uid;
   if (!uid) return res.redirect('/');
@@ -225,7 +264,7 @@ app.get('/documents', (req, res) => {
             <div class="card p-4 mb-4">
               <h6 class="text-uppercase text-secondary">Announcements</h6>
               <p class="mb-2">Quarterly reviews will close next Friday.</p>
-              <p class="mb-0">Remember to submit training attestations by month end.</p>
+              <p class="mb-0">Submit training attestations by month end.</p>
             </div>
             <div class="card p-4">
               <h6 class="text-uppercase text-secondary">Quick Links</h6>
