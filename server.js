@@ -25,7 +25,7 @@ const profiles = {
   1000: { dept: 'Executive', role: 'Chief Executive Officer', manager: 'Board of Directors', period: 'FY2025 H1', rating: 'N/A' }
 };
 
-// Reusable HTML shell with Bootstrap 5
+// Shared HTML shell with Bootstrap 5, gradient event text, and no-scroll layout
 function page(title, bodyHtml, showLogout = true) {
   return `
 <!doctype html>
@@ -36,48 +36,84 @@ function page(title, bodyHtml, showLogout = true) {
   <title>${title}</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
   <style>
-    :root { --bg:#0f172a; --panel:#0b1220; --ink:#e5e7eb; --ink-strong:#f3f4f6; --muted:#cbd5e1; --accent:#60a5fa; }
-    body { background: var(--bg); color: var(--ink); }
+    :root{
+      --brand-orange:#f36f21;
+      --brand-blue:#0a5aa5;
+      --bg:#0f172a;
+      --panel:#0b1220;
+      --ink:#e6e9ef;
+      --ink-strong:#f6f7fb;
+      --muted:#cbd5e1;
+    }
+
+    html, body { height: 100%; }
+    body { min-height:100vh; display:flex; flex-direction:column; background:var(--bg); color:var(--ink); }
+    .main { flex:1; display:flex; flex-direction:column; }
+
     .navbar { background: var(--panel); }
     .brand { color: var(--ink); }
-    .brand .accent { color: var(--accent); }
-    .sidebar { min-height: 100vh; background: var(--panel); }
-    .sidebar a { color: #a3b2c6; text-decoration: none; display: block; padding: .75rem 1rem; border-radius: .5rem; }
-    .sidebar a.active, .sidebar a:hover { background: #111827; color: var(--ink-strong); }
-    .card { background: #111827; border: 0; box-shadow: 0 8px 28px rgba(0,0,0,.24); }
-    /* High-contrast content inside cards */
-    .card h5, .card h6, .card p, .card li, .card div, .card span { color: var(--ink-strong); }
-    .card .meta, .meta { color: var(--muted) !important; }
-    /* Override Bootstrap's low-contrast secondary on dark UI */
-    .text-secondary { color: var(--muted) !important; }
-    .badge-soft { background: rgba(96,165,250,.15); color: var(--accent); border: 1px solid rgba(96,165,250,.35); }
-    .credit { background: var(--panel); color: #9aa9c0; }
-    /* Login page header tags */
-    .event-tag { color: var(--muted); }
-  </style>
-  /* High-contrast fixes for login page */
-.card h4 { color: var(--ink-strong) !important; }
-.card .form-label { color: var(--ink-strong) !important; }
-.event-tag { color: var(--muted) !important; }          /* subtitle under event title */
-.text-secondary { color: var(--muted) !important; }     /* override low-contrast default */
 
-/* Inputs: clear, readable text on white fields */
-.card .form-control { color: #0f172a; background-color: #ffffff; }
-.card .form-control::placeholder { color: #64748b; }    /* darker placeholder for contrast */
+    /* Event header with half orange / half blue gradient text */
+    .grad-split {
+      background: linear-gradient(90deg, var(--brand-orange) 0 50%, var(--brand-blue) 50% 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+    }
+
+    .hero { text-align:center; padding: 28px 16px 8px; }
+    .hero .event { font-weight: 800; font-size: clamp(26px, 3.2vw, 38px); line-height: 1.25; }
+    .hero .host { margin-top: 6px; font-weight: 600; font-size: clamp(16px, 1.6vw, 18px); }
+    .hero .mark{
+      display:inline-flex; align-items:center; gap:10px;
+      margin-top:14px; padding:6px 12px; border-radius:999px;
+      background:linear-gradient(90deg, rgba(243,111,33,.15), rgba(10,90,165,.15));
+      border:1px solid rgba(243,111,33,.25); color: var(--ink);
+    }
+    .hero .dot{width:10px;height:10px;border-radius:50%;background:var(--brand-orange);box-shadow:0 0 0 3px rgba(243,111,33,.25);}
+
+    /* Login card: compact to avoid scrolling, still readable */
+    .login-wrap { padding-bottom: 12px; }
+    .login-card{ background:#111827; border:0; box-shadow:0 12px 36px rgba(0,0,0,.30); }
+    .login-card h4{ color:var(--ink-strong)!important; }
+    .login-card .form-label{ color:var(--ink-strong)!important; margin-bottom:.35rem; }
+    .login-card .form-control{ background:#fff; color:#0f172a; padding:.85rem 1rem; font-size:1.05rem; }
+    .login-card .form-control::placeholder{ color:#64748b; }
+    .btn-primary{
+      background: linear-gradient(90deg, var(--brand-orange), var(--brand-blue));
+      border:0; box-shadow:0 6px 18px rgba(10,90,165,.35);
+    }
+    .btn-primary:hover{ filter:brightness(1.03); }
+
+    /* Sidebar and content cards (documents) */
+    .sidebar{ min-height: 100vh; background: var(--panel); }
+    .sidebar a{ color:#a3b2c6; text-decoration:none; display:block; padding:.7rem 1rem; border-radius:.5rem; }
+    .sidebar a.active, .sidebar a:hover{ background:#111827; color:var(--ink-strong); }
+    .card{ background:#111827; border:0; box-shadow:0 8px 28px rgba(0,0,0,.24); }
+    .card h5, .card h6, .card p, .card li, .card div, .card span { color: var(--ink-strong); }
+    .meta{ color: var(--muted) !important; }
+    .text-secondary{ color: var(--muted) !important; }
+    .badge-soft { background: rgba(10,90,165,.12); color: var(--brand-blue); border:1px solid rgba(10,90,165,.35); }
+
+    footer.credit{ background: var(--panel); color:#9aa9c0; }
+  </style>
 </head>
 <body>
-  <nav class="navbar navbar-expand px-3">
-    <div class="container-fluid">
-      <span class="navbar-brand brand"><span class="accent">Company</span> Portal</span>
-      <div class="d-flex align-items-center gap-2">
+  <nav class="navbar navbar-expand">
+    <div class="container py-2">
+      <span class="navbar-brand brand m-0 fw-semibold">Company Portal</span>
+      <div class="ms-auto">
         ${showLogout ? '<a class="btn btn-outline-light btn-sm" href="/logout">Logout</a>' : ''}
       </div>
     </div>
   </nav>
-  ${bodyHtml}
-  <footer class="credit text-center py-2 mt-4">
-    © Manish Kale — Product Security Engineer
-  </footer>
+
+  <main class="main">
+    ${bodyHtml}
+  </main>
+
+  <footer class="credit text-center py-2">© Manish Kale — Product Security Engineer</footer>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 </body>
 </html>`;
@@ -155,14 +191,16 @@ function reportFor(id) {
 // Routes
 app.get('/', (req, res) => {
   const body = `
-  <div class="container py-5">
-    <div class="text-center mb-4">
-      <div class="h5 mb-1">October Cyber Month — 2025</div>
-      <div class="event-tag">Hosted by EvDevSec Team</div>
-    </div>
+  <section class="hero container">
+    <div class="event grad-split">October Cyber Month — 2025</div>
+    <div class="host grad-split">Hosted by EvDevSec Team</div>
+    <div class="mark"><span class="dot"></span><span>Secure Coding Challenge</span></div>
+  </section>
+
+  <section class="container login-wrap">
     <div class="row justify-content-center">
-      <div class="col-md-6 col-lg-5">
-        <div class="card p-4">
+      <div class="col-12 col-md-7 col-lg-6">
+        <div class="card p-4 login-card">
           <h4 class="mb-3">Sign in</h4>
           <form method="POST" action="/login" autocomplete="off" novalidate>
             <div class="mb-3">
@@ -174,7 +212,6 @@ app.get('/', (req, res) => {
               <div class="input-group">
                 <input type="password" name="password" id="password" class="form-control" placeholder="Password" required>
                 <button class="btn btn-outline-secondary" type="button" id="togglePass" aria-label="Show password">
-                  <!-- Simple eye icon -->
                   <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
                     <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8"/>
                     <path d="M8 5.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5"/>
@@ -182,23 +219,25 @@ app.get('/', (req, res) => {
                 </button>
               </div>
             </div>
-            <button type="submit" class="btn btn-primary w-100">Login</button>
+            <button type="submit" class="btn btn-primary w-100 py-2 fs-5">Login</button>
           </form>
         </div>
       </div>
     </div>
-  </div>
+  </section>
+
   <script>
     (function(){
-      const pwd = document.getElementById('password');
-      const btn = document.getElementById('togglePass');
-      const icon = document.getElementById('eyeIcon');
-      btn.addEventListener('click', () => {
-        const showing = pwd.type === 'text';
-        pwd.type = showing ? 'password' : 'text';
-        // swap icon (simple stroke flip effect)
-        icon.style.opacity = showing ? '1' : '0.7';
-      });
+      const pwd=document.getElementById('password');
+      const btn=document.getElementById('togglePass');
+      const icon=document.getElementById('eyeIcon');
+      if(btn&&pwd&&icon){
+        btn.addEventListener('click',()=>{
+          const showing=pwd.type==='text';
+          pwd.type=showing?'password':'text';
+          icon.style.opacity=showing?'1':'0.7';
+        });
+      }
     })();
   </script>`;
   res.send(page('Login • Company Portal', body, false));
@@ -211,10 +250,10 @@ app.post('/login', (req, res) => {
 
   if (!user || !user.pass || user.pass !== password) {
     return res.status(401).send(page('Login Failed', `
-      <div class="container py-5">
+      <div class="container py-4">
         <div class="row justify-content-center">
-          <div class="col-md-6 col-lg-5">
-            <div class="card p-4">
+          <div class="col-12 col-md-7 col-lg-6">
+            <div class="card p-4 login-card">
               <h5 class="text-danger">Invalid credentials</h5>
               <a href="/" class="btn btn-secondary mt-3">Back to login</a>
             </div>
@@ -256,7 +295,7 @@ app.get('/documents', (req, res) => {
       <main class="col-12 col-md-9 col-xl-10 p-4">
         <div class="row g-4">
           <div class="col-12 col-xl-8">
-            <div class="card p-4">
+            <div class="card p-4 p-md-5">
               ${report ? report : '<h5>Document not found.</h5>'}
             </div>
           </div>
